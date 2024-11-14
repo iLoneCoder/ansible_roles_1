@@ -1,0 +1,46 @@
+---
+
+- hosts: all
+  become: true
+ 
+  vars:
+    password: "123456"
+ 
+  tasks:
+  
+  - name: install nginx, php, mlocate, vim
+    apt:
+      pkg:
+        - nginx
+        - php
+        - mlocate
+        - vim
+      state: latest
+      update_cache: true
+
+  - name: create user and set password
+    user:
+      name: upload
+      password: "{{ password | password_hash('sha512')  }}"
+
+  - name: create path if not exists
+    file:
+      path: "/usr/share/testpage"
+      state: directory
+      mode: "0755"
+  
+  - name: get target public ip address
+    shell: "curl -s ifconfig.me"
+    register: public_ip_address
+
+  - name: write ip address to file
+    lineinfile:
+      path: "/usr/share/testpage/index.html"
+      line: "IP Address of this server is = {{ public_ip_address.stdout }}"
+      create: yes
+
+  - name: start nginx service
+    service:
+      name: nginx
+      state: restarted
+      enabled: true

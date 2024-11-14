@@ -1,0 +1,8 @@
+- name: install nginx, php, mlocate, vim
+  apt:
+    name:
+      - nginx
+      - php
+      - mlocate
+      - vim
+    state: latest

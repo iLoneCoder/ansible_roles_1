@@ -1,0 +1,4 @@
+- name: create user and set password
+  user:
+    name: "{{username}}"
+    password: "{{ password | password_hash('sha512') }}"
